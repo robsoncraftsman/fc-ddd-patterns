@@ -190,22 +190,31 @@ describe("Order repository test", () => {
     const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
     customer.changeAddress(address);
     await customerRepository.create(customer);
-
+    
     const productRepository = new ProductRepository();
-    const product = new Product("1", "Product 1", 10);
-    await productRepository.create(product);
+    const orderRepository = new OrderRepository();
 
-    const newOrdemItem = new OrderItem(
+    const productOne = new Product("1", "Product 1", 10);
+    await productRepository.create(productOne);
+    const newOrdemItemOne = new OrderItem(
       "1",
-      product.name,
-      product.price,
-      product.id,
+      productOne.name,
+      productOne.price,
+      productOne.id,
       2
     );
 
-    const orderRepository = new OrderRepository();
+    const productTwo = new Product("2", "Product 2", 20);
+    await productRepository.create(productTwo);
+    const newOrdemItemTwo = new OrderItem(
+      "2",
+      productTwo.name,
+      productTwo.price,
+      productTwo.id,
+      2
+    );
 
-    const newOrder = new Order("1", customer.id, [newOrdemItem]);
+    const newOrder = new Order("1", customer.id, [newOrdemItemOne, newOrdemItemTwo]);
     await orderRepository.create(newOrder);
 
     const orderFound = await orderRepository.find(newOrder.id);
@@ -213,12 +222,21 @@ describe("Order repository test", () => {
     expect(orderFound.id).toBe(newOrder.id);
     expect(orderFound.customerId).toBe(newOrder.customerId);
     expect(orderFound.total()).toBe(newOrder.total());
-    expect(orderFound.items.length).toBe(1);
-    expect(orderFound.items[0].id).toBe(newOrdemItem.id);
-    expect(orderFound.items[0].name).toBe(newOrdemItem.name);
-    expect(orderFound.items[0].price).toBe(newOrdemItem.price);
-    expect(orderFound.items[0].quantity).toBe(newOrdemItem.quantity);
-    expect(orderFound.items[0].productId).toBe(newOrdemItem.productId);
+    expect(orderFound.items.length).toBe(2);
+
+    const orderFoundItemOne = orderFound.items.find(item => item.id == "1");
+    expect(orderFoundItemOne.id).toBe(newOrdemItemOne.id);
+    expect(orderFoundItemOne.name).toBe(newOrdemItemOne.name);
+    expect(orderFoundItemOne.price).toBe(newOrdemItemOne.price);
+    expect(orderFoundItemOne.quantity).toBe(newOrdemItemOne.quantity);
+    expect(orderFoundItemOne.productId).toBe(newOrdemItemOne.productId);
+
+    const orderFoundItemTwo = orderFound.items.find(item => item.id == "2");
+    expect(orderFoundItemTwo.id).toBe(newOrdemItemTwo.id);
+    expect(orderFoundItemTwo.name).toBe(newOrdemItemTwo.name);
+    expect(orderFoundItemTwo.price).toBe(newOrdemItemTwo.price);
+    expect(orderFoundItemTwo.quantity).toBe(newOrdemItemTwo.quantity);
+    expect(orderFoundItemTwo.productId).toBe(newOrdemItemTwo.productId);
   });
 
   it("find all orders", async () => {
