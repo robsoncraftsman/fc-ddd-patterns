@@ -8,3 +8,10 @@ https://plataforma.fullcycle.com.br/
     - Ter o docker/docker desktop instalado na máquina local
     - Utilizar a extenção "Remote Containers" do VSCode
     - Abrir o projeto através da opção "Remote-Containers: Open Folder in Container..."
+
+## Para rodar o projeto
+
+- Antes da primeira execução, deve-se instalar as dependências:
+`npm install`
+- Para executar os testes:
+`npm test`
