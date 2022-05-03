@@ -184,4 +184,44 @@ describe("Order repository test", () => {
 
   });
 
+  it("find an order by id", async () => {
+    const customerRepository = new CustomerRepository();
+    const customer = new Customer("1", "Customer 1");
+    const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+    customer.changeAddress(address);
+    await customerRepository.create(customer);
+
+    const productRepository = new ProductRepository();
+    const product = new Product("1", "Product 1", 10);
+    await productRepository.create(product);
+
+    const newOrdemItem = new OrderItem(
+      "1",
+      product.name,
+      product.price,
+      product.id,
+      2
+    );
+
+    const newOrder = new Order("1", customer.id, [newOrdemItem]);
+    console.log(JSON.stringify(newOrder));
+
+    const orderRepository = new OrderRepository();
+    await orderRepository.create(newOrder);
+
+    const orderFound = await orderRepository.find(newOrder.id);
+    console.log(JSON.stringify(orderFound));
+
+    expect(orderFound).toBeTruthy();
+    expect(orderFound.id).toBe(newOrder.id);
+    expect(orderFound.customerId).toBe(newOrder.customerId);
+    expect(orderFound.total()).toBe(newOrder.total());
+    expect(orderFound.items.length).toBe(1);
+    expect(orderFound.items[0].id).toBe(newOrdemItem.id);
+    expect(orderFound.items[0].name).toBe(newOrdemItem.name);
+    expect(orderFound.items[0].price).toBe(newOrdemItem.price);
+    expect(orderFound.items[0].quantity).toBe(newOrdemItem.quantity);
+    expect(orderFound.items[0].productId).toBe(newOrdemItem.productId);
+  });
+
 });
