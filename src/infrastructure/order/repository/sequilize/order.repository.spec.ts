@@ -203,15 +203,12 @@ describe("Order repository test", () => {
       2
     );
 
-    const newOrder = new Order("1", customer.id, [newOrdemItem]);
-    console.log(JSON.stringify(newOrder));
-
     const orderRepository = new OrderRepository();
+
+    const newOrder = new Order("1", customer.id, [newOrdemItem]);
     await orderRepository.create(newOrder);
 
     const orderFound = await orderRepository.find(newOrder.id);
-    console.log(JSON.stringify(orderFound));
-
     expect(orderFound).toBeTruthy();
     expect(orderFound.id).toBe(newOrder.id);
     expect(orderFound.customerId).toBe(newOrder.customerId);
@@ -222,6 +219,66 @@ describe("Order repository test", () => {
     expect(orderFound.items[0].price).toBe(newOrdemItem.price);
     expect(orderFound.items[0].quantity).toBe(newOrdemItem.quantity);
     expect(orderFound.items[0].productId).toBe(newOrdemItem.productId);
+  });
+
+  it("find all orders", async () => {
+    const customerRepository = new CustomerRepository();
+    const customer = new Customer("1", "Customer 1");
+    const address = new Address("Street 1", 1, "Zipcode 1", "City 1");
+    customer.changeAddress(address);
+    await customerRepository.create(customer);
+
+    const productRepository = new ProductRepository();
+    const orderRepository = new OrderRepository();
+
+    const productOne = new Product("1", "Product 1", 10);
+    await productRepository.create(productOne);
+    const newOrdemOneItem = new OrderItem(
+      "1",
+      productOne.name,
+      productOne.price,
+      productOne.id,
+      2
+    );
+    const newOrderOne = new Order("1", customer.id, [newOrdemOneItem]);
+    await orderRepository.create(newOrderOne);
+
+    const productTwo = new Product("2", "Product 2", 20);
+    await productRepository.create(productTwo);
+    const newOrdemTwoItem = new OrderItem(
+      "2",
+      productTwo.name,
+      productTwo.price,
+      productTwo.id,
+      2
+    );
+    const newOrderTwo = new Order("2", customer.id, [newOrdemTwoItem]);
+    await orderRepository.create(newOrderTwo);
+
+    const ordersFound = await orderRepository.findAll();
+    expect(ordersFound.length).toBe(2);
+
+    const orderOneFound = ordersFound.find(order => order.id === "1");
+    expect(orderOneFound.id).toBe(newOrderOne.id);
+    expect(orderOneFound.customerId).toBe(newOrderOne.customerId);
+    expect(orderOneFound.total()).toBe(newOrderOne.total());
+    expect(orderOneFound.items.length).toBe(1);
+    expect(orderOneFound.items[0].id).toBe(newOrdemOneItem.id);
+    expect(orderOneFound.items[0].name).toBe(newOrdemOneItem.name);
+    expect(orderOneFound.items[0].price).toBe(newOrdemOneItem.price);
+    expect(orderOneFound.items[0].quantity).toBe(newOrdemOneItem.quantity);
+    expect(orderOneFound.items[0].productId).toBe(newOrdemOneItem.productId);
+
+    const orderTwoFound = ordersFound.find(order => order.id === "2");
+    expect(orderTwoFound.id).toBe(newOrderTwo.id);
+    expect(orderTwoFound.customerId).toBe(newOrderTwo.customerId);
+    expect(orderTwoFound.total()).toBe(newOrderTwo.total());
+    expect(orderTwoFound.items.length).toBe(1);
+    expect(orderTwoFound.items[0].id).toBe(newOrdemTwoItem.id);
+    expect(orderTwoFound.items[0].name).toBe(newOrdemTwoItem.name);
+    expect(orderTwoFound.items[0].price).toBe(newOrdemTwoItem.price);
+    expect(orderTwoFound.items[0].quantity).toBe(newOrdemTwoItem.quantity);
+    expect(orderTwoFound.items[0].productId).toBe(newOrdemTwoItem.productId);
   });
 
 });
