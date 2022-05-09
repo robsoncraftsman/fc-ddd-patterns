@@ -25,6 +25,14 @@ export default class Order {
     return this._items;
   }
 
+  addItem(orderItem: OrderItem) {
+    this._items.push(orderItem);
+  }
+
+  removeItem(itemId: String) {
+    this._items = this._items.filter((item) => item.id !== itemId);
+  }
+
   validate(): boolean {
     if (this._id.length === 0) {
       throw new Error("Id is required");

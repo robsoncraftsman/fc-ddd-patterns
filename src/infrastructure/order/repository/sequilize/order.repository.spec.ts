@@ -103,20 +103,20 @@ describe("Order repository test", () => {
 
     const orderId = "1";
     const customerId = "1";
-    const orderToInsert = new Order(orderId, customerId, [ordemItemOne]);
+    const order = new Order(orderId, customerId, [ordemItemOne]);
 
     const orderRepository = new OrderRepository();
-    await orderRepository.create(orderToInsert);
+    await orderRepository.create(order);
 
     const insertedOrderModel = await OrderModel.findOne({
-      where: { id: orderToInsert.id },
+      where: { id: order.id },
       include: ["items"],
     });
 
     expect(insertedOrderModel.toJSON()).toStrictEqual({
       id: orderId,
       customer_id: customerId,
-      total: orderToInsert.total(),
+      total: order.total(),
       items: [
         {
           id: ordemItemOne.id,
@@ -149,11 +149,13 @@ describe("Order repository test", () => {
       2
     );
 
-    const orderToUpdate = new Order(orderId, customerId, [ordemItemTwo, ordemItemThree]);
-    await orderRepository.update(orderToUpdate);
+    order.removeItem(ordemItemOne.id);
+    order.addItem(ordemItemTwo);
+    order.addItem(ordemItemThree);
+    await orderRepository.update(order);
 
     const updatedOrderModel = await OrderModel.findOne({
-      where: { id: orderToUpdate.id },
+      where: { id: order.id },
       include: ["items"],
     });
 
@@ -161,7 +163,7 @@ describe("Order repository test", () => {
     expect(jsonUpdatedOrderModel).toStrictEqual({
       id: orderId,
       customer_id: customerId,
-      total: orderToUpdate.total(),
+      total: order.total(),
       items: [
         {
           id: ordemItemTwo.id,
