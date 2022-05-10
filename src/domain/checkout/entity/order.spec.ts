@@ -40,4 +40,23 @@ describe("Order unit tests", () => {
       const order = new Order("o1", "c1", [item]);
     }).toThrowError("Quantity must be greater than 0");
   });
+
+  it("should add an item to an order", () => {
+    const itemOne = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const order = new Order("o1", "c1", [itemOne]);
+    const itemTwo = new OrderItem("i2", "Item 2", 200, "p2", 2);
+    order.addItem(itemTwo);
+    expect(order.items.length).toBe(2);
+    expect(order.items.find(item => item.id === "i1")).toBeDefined();
+    expect(order.items.find(item => item.id === "i2")).toBeDefined();
+  });
+
+  it("should remove an item from an order", () => {
+    const itemOne = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const itemTwo = new OrderItem("i2", "Item 2", 200, "p2", 2);
+    const order = new Order("o1", "c1", [itemOne, itemTwo]);
+    order.removeItem("i1");
+    expect(order.items.length).toBe(1);
+    expect(order.items.find(item => item.id === "i1")).toBeUndefined();
+  });
 });

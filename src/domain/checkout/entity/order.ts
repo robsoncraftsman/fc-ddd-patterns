@@ -30,7 +30,10 @@ export default class Order {
   }
 
   removeItem(itemId: String) {
-    this._items = this._items.filter((item) => item.id !== itemId);
+    const itemIndex = this._items.findIndex((item) => item.id === itemId);
+    if (itemIndex >= 0) {
+      this._items.splice(itemIndex, 1);
+    }
   }
 
   validate(): boolean {
